@@ -3,8 +3,12 @@
 #
 # AFTER THIS YOU MUST MANUALLY DELETE the checksums.txt file since it is
 # incomplete and we don't need checksums since our artifacts are signed.
-default: build
+default: all
 GON_VERSION=$(shell git rev-parse --short HEAD)
+
+.PHONY: all
+all: clean build
+
 .PHONY: build
 build:
 	CGO_ENABLED=0 go build -ldflags="-X 'main.version=$(GON_VERSION)'" -o gon ./cmd/gon
@@ -14,7 +18,7 @@ release:
 .PHONY: release
 
 clean:
-	rm -rf dist/
+	rm -rf dist/ gon
 .PHONY: clean
 
 # Update the TOC in the README.
