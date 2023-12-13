@@ -2,7 +2,6 @@ package createdmg
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,7 +13,7 @@ import (
 // create-dmg script. You MUST call Close on this command when you're done.
 func Cmd(ctx context.Context) (*exec.Cmd, error) {
 	// Create a temporary directory where we'll extract the project
-	td, err := ioutil.TempDir("", "createdmg")
+	td, err := os.MkdirTemp("", "createdmg")
 	if err != nil {
 		return nil, err
 	}

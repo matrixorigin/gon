@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 	"sync"
@@ -51,7 +51,7 @@ func realMain() int {
 	args := flags.Args()
 
 	// Build a logger
-	logOut := ioutil.Discard
+	logOut := io.Discard
 	if logLevel != "" {
 		logOut = os.Stderr
 	}
@@ -159,8 +159,10 @@ func realMain() int {
 		cfg.AppleId.Username = appleIdUsername
 	}
 
-	if cfg.AppleId.Password == "" {
-		if _, ok := os.LookupEnv("AC_PASSWORD"); !ok {
+	// deprecated: @env:AC_PASSWORD is deprecated in notarytool
+	if cfg.AppleId.Password == "" || cfg.AppleId.Password == "@env:AC_PASSWORD" {
+		applePassword, ok := os.LookupEnv("AC_PASSWORD")
+		if !ok {
 			color.New(color.Bold, color.FgRed).Fprintf(os.Stdout, "❗️ No apple_id password provided\n")
 			color.New(color.FgRed).Fprintf(os.Stdout,
 				"An Apple ID password (or lookup directive) must be specified in the\n"+
@@ -169,7 +171,7 @@ func realMain() int {
 			return 1
 		}
 
-		cfg.AppleId.Password = "@env:AC_PASSWORD"
+		cfg.AppleId.Password = applePassword
 	}
 	if cfg.AppleId.Provider == "" {
 		cfg.AppleId.Provider = os.Getenv("AC_PROVIDER")

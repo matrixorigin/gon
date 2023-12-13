@@ -4,7 +4,6 @@ package zip
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -127,7 +126,7 @@ func createRoot(ctx context.Context, logger hclog.Logger, opts *Options) (string
 	}
 
 	// Create our root directory
-	root, err := ioutil.TempDir("", "gon-createzip")
+	root, err := os.MkdirTemp("", "gon-createzip")
 	if err != nil {
 		return "", err
 	}
